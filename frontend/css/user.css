@@ -1,0 +1,114 @@
+/* frontend/css/user.css */
+.user-page-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    display: flex;
+    gap: 30px;
+    padding: 0 20px;
+    min-height: 500px;
+}
+
+.user-sidebar {
+    width: 250px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.user-sidebar h3 {
+    margin-bottom: 20px;
+    font-size: 18px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.user-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.user-menu li {
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.user-menu li:hover, .user-menu li.active {
+    background: #000;
+    color: #fff;
+}
+
+.user-content {
+    flex: 1;
+    background: #fff;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border-radius: 8px;
+}
+
+.user-panel {
+    display: none;
+}
+
+.user-panel.active {
+    display: block;
+}
+
+.profile-info {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.profile-info p {
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 10px;
+}
+
+.profile-info p:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.profile-info strong {
+    display: inline-block;
+    width: 150px;
+    color: #555;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.orders-table th, .orders-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.orders-table th {
+    background: #f9f9f9;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.badge.paid { background: #d4edda; color: #155724; }
+.badge.pending { background: #fff3cd; color: #856404; }
+.badge.failed { background: #f8d7da; color: #721c24; }

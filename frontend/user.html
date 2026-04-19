@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - KAINÈA</title>
+    <link rel="icon" href="assets/images/stecu.png">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/user.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <a href="/" class="logo">
+                <img src="assets/images/stecu.png" alt="Kainea Logo" style="height: 70px;">
+            </a>
+            <div class="user-actions" id="userActions">
+                </div>
+        </div>
+    </header>
+
+    <main class="user-page-container">
+        <aside class="user-sidebar">
+            <h3>My Account</h3>
+            <ul class="user-menu">
+                <li class="active" onclick="switchUserPanel('profile')">👤 My Profile</li>
+                <li onclick="switchUserPanel('orders')">📦 Order History</li>
+                <li onclick="logoutUser()" style="color: #ff4444; margin-top: 20px;">🚪 Logout</li>
+            </ul>
+        </aside>
+
+        <section class="user-content">
+            
+            <div id="profile-panel" class="user-panel active">
+                <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">Personal Information</h2>
+                <div class="profile-info">
+                    <p><strong>Full Name:</strong> <span id="displayUserName">Loading...</span></p>
+                    <p><strong>Email Address:</strong> <span id="displayUserEmail">Loading...</span></p>
+                    <p><strong>Account Role:</strong> <span id="displayUserRole" style="text-transform: capitalize;">Loading...</span></p>
+                </div>
+            </div>
+
+            <div id="orders-panel" class="user-panel">
+                <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">My Orders</h2>
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Payment Status</th>
+                            <th>Shipping Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userOrdersBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Belum ada riwayat pesanan. <a href="/">Belanja sekarang</a></td>
+                        </tr>
+                        </tbody>
+                </table>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+           
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Silakan login terlebih dahulu untuk mengakses halaman ini.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            
+            document.getElementById('displayUserName').textContent = localStorage.getItem('userName') || 'N/A';
+            document.getElementById('displayUserEmail').textContent = localStorage.getItem('userEmail') || 'N/A';
+            document.getElementById('displayUserRole').textContent = localStorage.getItem('role') || 'Customer';
+
+            fetchMyOrders();
+        });
+
+        
+        function switchUserPanel(panelId) {
+            
+            document.querySelectorAll('.user-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.user-menu li').forEach(li => li.classList.remove('active'));
+            
+            document.getElementById(`${panelId}-panel`).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function logoutUser() {
+            if(confirm('Apakah Anda yakin ingin keluar?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        
+        async function fetchMyOrders() {
+            try {
+              
+                const response = await fetch('http://localhost:8080/api/orders/my-orders', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                
+                if (response.ok) {
+                    const orders = await response.json();
+                    const tbody = document.getElementById('userOrdersBody');
+                    
+                    if (orders.length > 0) {
+                        tbody.innerHTML = orders.map(o => `
+                            <tr>
+                                <td><strong>${o._id.substring(o._id.length - 6).toUpperCase()}</strong></td>
+                                <td>${new Date(o.createdAt).toLocaleDateString()}</td>
+                                <td>Rp ${o.totalSummary.toLocaleString('id-ID')}</td>
+                                <td><span class="badge ${o.paymentStatus === 'Paid' ? 'paid' : (o.paymentStatus === 'Failed' ? 'failed' : 'pending')}">${o.paymentStatus}</span></td>
+                                <td>${o.shippingStatus || 'Pending'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.log('Belum ada rute khusus riwayat pesanan di backend, atau server mati.');
+            }
+        }
+    </script>
+</body>
+</html>

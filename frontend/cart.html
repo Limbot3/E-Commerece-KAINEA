@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - KAINÈA</title>
+    <link rel="icon" href="assets/images/stecu.png">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cart.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <a href="/" class="logo">
+                <img src="assets/images/stecu.png" alt="Kainea Logo" style="height: 70px;">
+            </a>
+            <div class="user-actions" id="userActions">
+                </div>
+        </div>
+    </header>
+
+    <main class="cart-page-container">
+        <h1 class="section-title">Your Shopping Cart</h1>
+        
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="cartTableBody">
+                </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="total-price">Total: <span id="cartTotal">Rp 0</span></div>
+            <button class="checkout-btn" id="proceedToCheckout" style="max-width: 300px; float: right;">Proceed to Payment</button>
+            <div style="clear: both;"></div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script>
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCartPage();
+
+            
+            document.getElementById('proceedToCheckout')?.addEventListener('click', () => {
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                if (cartItems.length === 0) return alert('Cart Anda kosong!');
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Silakan login untuk checkout');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                
+                window.location.href = 'payment.html';
+            });
+        });
+
+        function renderCartPage() {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const tbody = document.getElementById('cartTableBody');
+            let total = 0;
+
+            if (cartItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Your cart is empty. <a href="/">Shop now</a></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = cartItems.map((item, index) => {
+                const itemTotal = item.price * (item.quantity || 1);
+                total += itemTotal;
+                return `
+                    <tr>
+                        <td>
+                            <div class="cart-product">
+                                <img src="${item.image}" alt="${item.name}">
+                                <div>
+                                    <div style="font-weight:600;">${item.name}</div>
+                                    <small style="color:#888;">SKU: ${item.sku}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Rp ${item.price.toLocaleString('id-ID')}</td>
+                        <td>
+                            <input type="number" class="qty-input" value="${item.quantity || 1}" min="1" onchange="updateQty(${index}, this.value)">
+                        </td>
+                        <td>Rp ${itemTotal.toLocaleString('id-ID')}</td>
+                        <td>
+                            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('cartTotal').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function calculateTotal(items) {
+            return items.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
+        }
+
+        function updateQty(index, val) {
+            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            cartItems[index].quantity = parseInt(val);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            renderCartPage();
+            updateCartCount(); 
+        }
+
+        function removeItem(index) {
+            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            cartItems.splice(index, 1);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            renderCartPage();
+            updateCartCount(); 
+        }
+    </script>
+</body>
+</html>

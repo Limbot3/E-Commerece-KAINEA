@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAINÈA - Admin Dashboard</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <div class="admin-layout">
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <img src="assets/images/stecu.png" alt="KAINEA Logo" style="max-height: 80px; margin-bottom: 10px;"><br>
+                <span style="font-size: 12px; font-weight: normal; color: #000000;">Admin Panel</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active" onclick="switchPanel('products')">🛍️ Products</li>
+                <li onclick="switchPanel('orders')">📦 Orders</li>
+                <li onclick="switchPanel('users')">👥 Users</li>
+            </ul>
+            <div class="logout-btn" onclick="logoutAdmin()">🚪 Logout</div>
+        </div>
+
+        <div class="main-content">
+            
+            <div id="products-panel" class="panel active">
+                <div class="section-header">
+                    <h2>Manage Products</h2>
+                    <button class="btn-primary" onclick="openProductModal()">+ Add New Product</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div id="orders-panel" class="panel">
+                <div class="section-header">
+                    <h2>Order History</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status Pengiriman</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div id="users-panel" class="panel">
+                <div class="section-header">
+                    <h2>Registered Users</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Add Product</h3>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="pName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="pCategory" required>
+                        <option value="Men">Men</option>
+                        <option value="Women">Women</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Price (Rp)</label>
+                        <input type="number" id="pPrice" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Stock</label>
+                        <input type="number" id="pStock" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="pDesc" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Product Image (Max 2MB)</label>
+                    <input type="file" id="pImage" accept="image/*">
+                    <img id="imagePreview" style="max-width: 100px; margin-top: 10px; display: none;">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api';
+        let currentBase64Image = '';
+
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            
+            if (!token || role !== 'admin') {
+                alert('Akses Ditolak! Anda bukan Admin atau belum login.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+          
+            fetchProducts();
+            fetchOrders();
+            fetchUsers();
+        });
+
+      
+        function switchPanel(panelId) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            
+            document.getElementById(`${panelId}-panel`).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function logoutAdmin() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products/all`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const products = await res.json();
+                
+                const tbody = document.getElementById('productsTableBody');
+                tbody.innerHTML = products.map(p => `
+                    <tr>
+                        <td><img src="${p.image || 'assets/images/placeholder.png'}" width="50" style="border-radius:4px;"></td>
+                        <td><strong>${p.name}</strong><br><small style="color:#888">${p.sku}</small></td>
+                        <td>${p.category}</td>
+                        <td>Rp ${p.price.toLocaleString('id-ID')}</td>
+                        <td>${p.stock}</td>
+                        <td>
+                            <button onclick="deleteProduct('${p._id}')" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error("Gagal load produk", err);
+            }
+        }
+
+      
+        document.getElementById('pImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                currentBase64Image = reader.result;
+                document.getElementById('imagePreview').src = currentBase64Image;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newProduct = {
+                name: document.getElementById('pName').value,
+                category: document.getElementById('pCategory').value,
+                price: document.getElementById('pPrice').value,
+                stock: document.getElementById('pStock').value,
+                description: document.getElementById('pDesc').value,
+                image: currentBase64Image
+            };
+
+            try {
+                await fetch(`${API_URL}/products`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(newProduct)
+                });
+                alert('Produk berhasil ditambahkan!');
+                closeModal();
+                fetchProducts();
+            } catch (err) {
+                alert('Gagal menyimpan produk.');
+            }
+        });
+
+        async function deleteProduct(id) {
+            if(!confirm('Yakin ingin menghapus produk ini?')) return;
+            try {
+                await fetch(`${API_URL}/products/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                fetchProducts();
+            } catch (err) {
+                alert('Gagal menghapus');
+            }
+        }
+
+      
+        async function fetchOrders() {
+            try {
+                const res = await fetch(`${API_URL}/orders`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const orders = await res.json();
+                
+                const tbody = document.getElementById('ordersTableBody');
+                tbody.innerHTML = orders.map(o => `
+                    <tr>
+                        <td><strong>${o._id.substring(o._id.length - 6).toUpperCase()}</strong><br><small>${new Date(o.createdAt).toLocaleDateString()}</small></td>
+                        <td>${o.fullname}<br><small>${o.email}</small></td>
+                        <td>Rp ${o.totalSummary.toLocaleString('id-ID')}</td>
+                        <td><span class="badge ${o.paymentStatus === 'Paid' ? 'paid' : 'pending'}">${o.paymentStatus}</span></td>
+                        <td>
+                            <select onchange="updateShipping('${o._id}', this.value)" style="padding:5px; border-radius:4px;">
+                                <option value="Pending" ${o.shippingStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Processing" ${o.shippingStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                                <option value="Shipped" ${o.shippingStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error("Gagal load pesanan");
+            }
+        }
+
+        async function updateShipping(orderId, newStatus) {
+            try {
+                await fetch(`${API_URL}/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ shippingStatus: newStatus })
+                });
+            } catch (err) {
+                alert('Gagal update status');
+            }
+        }
+
+       
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${API_URL}/users`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const users = await res.json();
+                
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>${u.name}</td>
+                        <td>${u.email}</td>
+                        <td>${u.role.toUpperCase()}</td>
+                        <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error("Gagal load user");
+            }
+        }
+
+       
+        function openProductModal() {
+            document.getElementById('productForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+            currentBase64Image = '';
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

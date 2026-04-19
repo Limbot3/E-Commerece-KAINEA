@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - KAINÈA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .checkout-container { max-width: 800px; margin: 40px auto; padding: 0 20px; display: flex; gap: 30px; }
+        .checkout-form { flex: 2; }
+        .checkout-summary { flex: 1; background: #f9f9f9; padding: 25px; height: fit-content; border: 1px solid #eee; border-radius: 4px; }
+        
+        .section-box { border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 4px; background: #fff; }
+        .section-title { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
+        
+        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
+        .radio-box { flex: 1; border: 1px solid #ddd; padding: 15px; cursor: pointer; text-align: center; border-radius: 4px; transition: 0.3s; }
+        .radio-box.active { border-color: #000; background: #fafafa; font-weight: bold; }
+        
+        .summary-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .summary-total { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; font-weight: bold; font-size: 18px; }
+        
+        .btn-confirm { background: #000; color: #fff; border: none; padding: 15px; width: 100%; cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; transition: 0.3s; }
+        .btn-confirm:hover { background: #333; }
+        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .payment-detail-box { display: none; padding: 15px; margin-top: 10px; border-radius: 4px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body style="background-color: #fff;">
+
+    <div style="text-align: center; padding: 30px 0; border-bottom: 1px solid #eee;">
+        <h1 style="letter-spacing: 3px; font-weight: 400;">CHECKOUT</h1>
+    </div>
+
+    <div class="checkout-container">
+        <div class="checkout-form">
+            
+            <div class="section-box">
+                <div class="section-title">1. Delivery Method</div>
+                <div class="radio-group">
+                    <div class="radio-box active" id="btn-delivery" onclick="setDelivery('Delivery')">🚚 Home Delivery</div>
+                    <div class="radio-box" id="btn-pickup" onclick="setDelivery('Pickup')">🏪 Pickup in Store</div>
+                </div>
+
+                <div id="delivery-details">
+                    <div class="form-group">
+                        <label>Alamat Pengirim (Toko)</label>
+                        <input type="text" value="KAINÈA HQ, Jl. Tekstil No.1, Jakarta" disabled style="background: #f0f0f0;">
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Lengkap Penerima</label>
+                        <textarea id="address" rows="3" placeholder="Masukkan alamat lengkap beserta kode pos..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Pilih Kurir</label>
+                        <select id="courier" onchange="calculateTotal()">
+                            <option value="0" disabled selected>-- Pilih Kurir --</option>
+                            <option value="15000" data-name="JNE Reguler">JNE Reguler - Rp 15.000</option>
+                            <option value="20000" data-name="SiCepat BEST">SiCepat BEST - Rp 20.000</option>
+                            <option value="40000" data-name="GoSend Same Day">GoSend Same Day - Rp 40.000</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="pickup-details" style="display: none;">
+                    <p style="font-size: 14px; color: #666; line-height: 1.6;">Pesanan Anda akan disiapkan di butik kami.<br><b>Alamat Pengambilan:</b> KAINÈA HQ, Jl. Tekstil No.1, Jakarta.<br>Tunjukkan ID Pesanan Anda kepada staf kami saat pengambilan.</p>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <div class="section-title">2. Payment Method</div>
+                <div class="radio-group">
+                    <div class="radio-box" id="btn-qris" onclick="setPayment('QRIS')">QRIS</div>
+                    <div class="radio-box" id="btn-bank" onclick="setPayment('Bank Transfer')">Bank Transfer</div>
+                </div>
+                
+                <div id="qris-details" class="payment-detail-box" style="text-align: center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=KAINEA-PAYMENT-SIMULATION" style="width: 150px; margin-bottom: 10px;">
+                    <p style="font-size: 13px; color: #666;">Scan QR Code di atas menggunakan aplikasi M-Banking atau e-Wallet Anda.</p>
+                </div>
+
+                <div id="bank-details" class="payment-detail-box" style="background: #f0f0f0;">
+                    <p style="margin: 0 0 5px 0; font-size: 14px;">Silakan transfer sesuai <b>Total Harga</b> ke:</p>
+                    <p style="margin: 0 0 5px 0; font-size: 16px;">Nomor Rekening: <b>123-456-7890</b> (BCA)</p>
+                    <p style="margin: 0; font-size: 14px;">Atas Nama: <b>PT KAINÈA TEXTILE</b></p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="checkout-summary">
+            <div class="section-title">Order Summary</div>
+            <div id="item-list" style="margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                </div>
+            
+            <div class="summary-item">
+                <span>Subtotal</span>
+                <span id="txt-subtotal">Rp 0</span>
+            </div>
+            <div class="summary-item">
+                <span>Shipping</span>
+                <span id="txt-shipping">Rp 0</span>
+            </div>
+            
+            <div class="summary-total">
+                <span>TOTAL</span>
+                <span id="txt-grandtotal">Rp 0</span>
+            </div>
+
+            <button class="btn-confirm" id="btnConfirm" onclick="processCheckout()">PLACE ORDER</button>
+        </div>
+    </div>
+
+    <script>
+        let subtotal = 0;
+        let shippingCost = 0;
+        let selectedDelivery = 'Delivery';
+        let selectedPayment = '';
+
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (cartItems.length === 0) {
+                alert('Keranjang kosong!');
+                window.location.href = 'index.html';
+                return;
+            }
+            renderSummary();
+        });
+
+        function renderSummary() {
+            let html = '';
+            cartItems.forEach(item => {
+                subtotal += (item.price * (item.quantity || 1));
+                html += `
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <img src="${item.image}" style="width: 50px; height: 60px; object-fit: cover;">
+                        <div style="font-size: 12px; flex: 1;">
+                            <div style="font-weight: 600;">${item.name}</div>
+                            <div>Qty: ${item.quantity || 1}</div>
+                            <div style="color: #666;">Rp ${(item.price * (item.quantity || 1)).toLocaleString('id-ID')}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('item-list').innerHTML = html;
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            if (selectedDelivery === 'Pickup') {
+                shippingCost = 0;
+            } else {
+                const courierSelect = document.getElementById('courier');
+                shippingCost = parseInt(courierSelect.value) || 0;
+            }
+
+            const grandTotal = subtotal + shippingCost;
+            
+            document.getElementById('txt-subtotal').innerText = `Rp ${subtotal.toLocaleString('id-ID')}`;
+            document.getElementById('txt-shipping').innerText = shippingCost === 0 ? 'Free' : `Rp ${shippingCost.toLocaleString('id-ID')}`;
+            document.getElementById('txt-grandtotal').innerText = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+        }
+
+        function setDelivery(type) {
+            selectedDelivery = type;
+            document.getElementById('btn-delivery').classList.remove('active');
+            document.getElementById('btn-pickup').classList.remove('active');
+            
+            if (type === 'Delivery') {
+                document.getElementById('btn-delivery').classList.add('active');
+                document.getElementById('delivery-details').style.display = 'block';
+                document.getElementById('pickup-details').style.display = 'none';
+            } else {
+                document.getElementById('btn-pickup').classList.add('active');
+                document.getElementById('delivery-details').style.display = 'none';
+                document.getElementById('pickup-details').style.display = 'block';
+            }
+            calculateTotal(); 
+        }
+
+        function setPayment(type) {
+            selectedPayment = type;
+            document.getElementById('btn-qris').classList.remove('active');
+            document.getElementById('btn-bank').classList.remove('active');
+            document.getElementById('qris-details').style.display = 'none';
+            document.getElementById('bank-details').style.display = 'none';
+            
+            if(type === 'QRIS') {
+                document.getElementById('btn-qris').classList.add('active');
+                document.getElementById('qris-details').style.display = 'block';
+            } else {
+                document.getElementById('btn-bank').classList.add('active');
+                document.getElementById('bank-details').style.display = 'block';
+            }
+        }
+
+        async function processCheckout() {
+            if (selectedDelivery === 'Delivery') {
+                const address = document.getElementById('address').value.trim();
+                const courier = document.getElementById('courier').value;
+                if (!address) return alert('Silakan masukkan alamat pengiriman!');
+                if (courier === "0") return alert('Silakan pilih kurir!');
+            }
+
+            if (!selectedPayment) {
+                return alert('Silakan pilih metode pembayaran (QRIS atau Bank Transfer)!');
+            }
+
+            const token = localStorage.getItem('token');
+            const userName = localStorage.getItem('userName');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (!token || !userName || !userEmail) {
+                alert('Sesi Anda telah habis. Silakan login kembali.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const btn = document.getElementById('btnConfirm');
+            btn.textContent = 'PROCESSING...';
+            btn.disabled = true;
+
+            const courierSelect = document.getElementById('courier');
+            const courierName = selectedDelivery === 'Delivery' ? courierSelect.options[courierSelect.selectedIndex].getAttribute('data-name') : 'Pickup';
+
+            const payload = {
+                cartItems: cartItems,
+                fullname: userName,   // Dikirim ke backend
+                email: userEmail,     // Dikirim ke backend
+                deliveryMethod: selectedDelivery,
+                shippingAddress: document.getElementById('address').value,
+                courier: courierName,
+                shippingCost: shippingCost,
+                paymentMethod: selectedPayment
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/api/orders/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    setTimeout(() => {
+                        alert('✅ Order Placed Successfully!');
+                        localStorage.removeItem('cartItems');
+                        window.location.href = 'user.html'; 
+                    }, 1500);
+                } else {
+                    const data = await response.json();
+                    alert('Checkout Gagal: ' + data.message);
+                    btn.textContent = 'PLACE ORDER';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert('Server Error. Pastikan backend menyala.');
+                btn.textContent = 'PLACE ORDER';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

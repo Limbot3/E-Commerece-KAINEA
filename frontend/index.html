@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAINÈA | Modern Fashion</title>
+    <link rel="icon" href="assets/images/stecu.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <a href="/" class="logo">
+                <img src="assets/images/stecu.png" alt="Kainea Logo" style="height: 70px;">
+            </a>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search products...">
+            </div>
+            <div class="user-actions" id="userActions">
+                <a id="loginLink">Login</a>
+                <a href="#" id="registerLink">Register</a>
+                <a href="admin.html" id="adminLink" style="display:none;">Admin</a>
+            </div>
+        </div>
+        <nav>
+            <ul class="nav-links"></ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <img src="assets/images/2.jpg" alt="Cover" style="filter: grayscale(100%);">
+        <div class="hero-content">
+            <h1>KAINÈA</h1>
+            <p>Mewah dalam sederhana, agung dalam budaya.</p>
+            <a href="#" class="btn" id="shopNowBtn">Shop Now</a>
+        </div>
+    </section>
+
+    <section class="featured-categories">
+        <h2 class="section-title">Koleksi Warisan Budaya</h2>
+        <div class="categories-grid">
+            <div class="category-card">
+                <img src="assets/images/4.jpeg" alt="Women's Collection" style="filter: grayscale(100%);">
+                <div class="category-title">the makers</div>
+            </div>
+            <div class="category-card">
+                <img src="assets/images/3.jpeg" alt="Men's Collection" style="filter: grayscale(100%);">
+                <div class="category-title">the keepers</div>
+            </div>
+            <div class="category-card">
+                <img src="assets/images/1.jpg" alt="Accessories" style="filter: grayscale(100%);">
+                <div class="category-title">the storytellers</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="new-arrivals" id="allProducts">
+        <h2 class="section-title">All Products</h2>
+        <div class="products-grid">
+            </div>
+    </section>
+
+    <div id="cartSidebar" class="cart-sidebar">
+        <button id="closeCartSidebar" class="close-sidebar">&times;</button>
+        <h2>Your Cart</h2>
+        <div id="cartItemsContainer" class="cart-items-container">
+            <p>Your cart is empty.</p>
+        </div>
+        <form id="shippingForm" class="shipping-form">
+            <h3>Shipping Address</h3>
+            <div class="form-group"><label for="shipName">Name</label><input type="text" id="shipName" name="shipName" required></div>
+            <div class="form-group"><label for="shipAddress">Address</label><input type="text" id="shipAddress" name="shipAddress" required></div>
+            <div class="form-group"><label for="shipCity">City</label><input type="text" id="shipCity" name="shipCity" required></div>
+            <div class="form-group"><label for="shipPostalCode">Postal Code</label><input type="text" id="shipPostalCode" name="shipPostalCode" required></div>
+            <div class="form-group"><label for="shipPhone">Phone</label><input type="tel" id="shipPhone" name="shipPhone" required></div>
+            <button type="submit" class="checkout-btn">Checkout</button>
+        </form>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Help</h3>
+                <ul>
+                    <li><a href="/shop">Shop at KAINÈA</a></li>
+                    <li><a href="/payment">Payment</a></li>
+                    <li><a href="/shipping">Shipping</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Policies</h3>
+                <ul>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Use</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Follow Us</h3>
+                <p>Join our social media community</p>
+                <div class="social-links">
+                    <a href="#">FB</a> <a href="#">IG</a> <a href="#">TW</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 KAINÈA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <form class="login-form" id="loginForm">
+                <h2>Login</h2>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                    <a href="#" class="forgot-password">Forgot your password?</a>
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+                <div class="create-account">
+                    Don't have an account? <a href="#" id="openRegisterFromLogin">Create one</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeRegisterModal">&times;</button>
+            <form class="login-form" id="registerForm">
+                <h2>Register</h2>
+                <div class="form-group"><label for="regName">Name</label><input type="text" id="regName" required></div>
+                <div class="form-group"><label for="regEmail">Email</label><input type="email" id="regEmail" required></div>
+                <div class="form-group"><label for="regPassword">Password</label><input type="password" id="regPassword" required></div>
+                <div class="form-group"><label for="regConfirmPassword">Confirm Password</label><input type="password" id="regConfirmPassword" required></div>
+                <button type="submit" class="login-btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
