@@ -1,8 +1,4 @@
-// frontend/js/main.js
 
-// ==========================================
-// 1. ANIMASI SCROLL & SEARCH
-// ==========================================
 function handleScrollAnimations() {
     const allProductsSection = document.getElementById('allProducts');
     if (allProductsSection) {
@@ -59,9 +55,7 @@ function handleShopNowClick(e) {
     }
 }
 
-// ==========================================
-// 2. SISTEM KERANJANG (CART)
-// ==========================================
+
 let cartItems = [];
 let cartCount = 0;
 
@@ -164,9 +158,7 @@ function reinitializeCartEventListeners() {
     });
 }
 
-// ==========================================
-// 3. RENDER PRODUK
-// ==========================================
+
 function loadProductsFromAdmin() {
     const products = JSON.parse(localStorage.getItem('products')) || [];
     const activeProducts = products.filter(product => product.status === 'active');
@@ -258,9 +250,7 @@ function getStaticProduct(staticId) {
     return staticProducts[staticId];
 }
 
-// ==========================================
-// 4. NOTIFIKASI
-// ==========================================
+
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.style.cssText = `
@@ -287,9 +277,7 @@ function showAddToCartNotification(productName) {
     showNotification(`Berhasil! "${productName}" ditambahkan ke cart`, 'success');
 }
 
-// ==========================================
-// 5. AUTENTIKASI & UI
-// ==========================================
+
 function updateUserUI() {
     const token = localStorage.getItem('token');
     const userName = localStorage.getItem('userName');
@@ -297,7 +285,7 @@ function updateUserUI() {
     const userActions = document.getElementById('userActions');
 
     if (token && userName) {
-        // Logika Zara dengan desain Simple Luxury
+        
         userActions.innerHTML = `
             <a style="cursor: pointer;" onclick="window.location.href = '${userRole}' === 'admin' ? 'admin.html' : 'user.html'">${userName}</a>
             <a href="cart.html" id="cartLink">Cart (0)</a>
@@ -305,7 +293,7 @@ function updateUserUI() {
         `;
         document.getElementById('logoutBtn').addEventListener('click', () => {
             localStorage.clear();
-            window.location.href = 'index.html'; // Langsung kembalikan ke home agar bersih
+            window.location.href = 'index.html'; 
         });
         updateCartCount();
     } else {
@@ -331,9 +319,7 @@ function attachLoginRegisterListeners() {
     }
 }
 
-// ==========================================
-// 6. INISIALISASI UTAMA
-// ==========================================
+
 document.addEventListener('DOMContentLoaded', function() {
     updateUserUI();
     initializeCart();
@@ -342,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
     handleScrollAnimations();
     window.addEventListener('scroll', handleScrollAnimations);
     
-    // Menutup Modal
+   
     document.querySelectorAll('.close-modal').forEach(btn => {
         btn.addEventListener('click', function() {
             this.closest('.modal').classList.remove('active');
@@ -350,17 +336,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Pindah ke Register dari Login
     document.getElementById('openRegisterFromLogin')?.addEventListener('click', (e) => {
         e.preventDefault();
         document.getElementById('loginModal').classList.remove('active');
         document.getElementById('registerModal').classList.add('active');
     });
 
-    // Menangani klik tombol Shop Now
+  
     document.getElementById('shopNowBtn')?.addEventListener('click', handleShopNowClick);
     
-    // Menutup Sidebar Cart
+   
     const cartSidebar = document.getElementById('cartSidebar');
     if (cartSidebar) {
         document.getElementById('closeCartSidebar')?.addEventListener('click', () => {
@@ -368,14 +353,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // FORM LOGIN SUBMIT
+ 
     document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
         try {
-            const response = await fetch('http://127.0.0.1:8080/api/auth/login', {
+            const response = await fetch('https://kainea.marianuswilliam.web.id/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -404,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // FORM REGISTER SUBMIT
+   
     document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('regName').value;
@@ -415,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (password !== confirm) return alert('Passwords do not match');
         
         try {
-            const response = await fetch('http://127.0.0.1:8080/api/auth/register', {
+            const response = await fetch('https://kainea.marianuswilliam.web.id/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password })

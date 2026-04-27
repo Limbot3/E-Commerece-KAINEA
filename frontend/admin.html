@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+a<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -132,10 +132,12 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:8080/api';
+        // SMART API URL: Otomatis mendeteksi environment (Local vs Production)
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_URL = isLocalhost ? 'http://localhost:8080/api' : 'http://kainea.marianuswilliam.web.id/api';
+        
         let currentBase64Image = '';
 
-       
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
             const role = localStorage.getItem('role');
@@ -146,13 +148,11 @@
                 return;
             }
 
-          
             fetchProducts();
             fetchOrders();
             fetchUsers();
         });
 
-      
         function switchPanel(panelId) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
@@ -177,12 +177,12 @@
                 tbody.innerHTML = products.map(p => `
                     <tr>
                         <td><img src="${p.image || 'assets/images/placeholder.png'}" width="50" style="border-radius:4px;"></td>
-                        <td><strong>${p.name}</strong><br><small style="color:#888">${p.sku}</small></td>
+                        <td><strong>${p.name}</strong><br><small style="color:#888">${p.sku || '-'}</small></td>
                         <td>${p.category}</td>
                         <td>Rp ${p.price.toLocaleString('id-ID')}</td>
                         <td>${p.stock}</td>
                         <td>
-                            <button onclick="deleteProduct('${p._id}')" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button>
+                            <button onclick="deleteProduct('${p.id}')" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Delete</button>
                         </td>
                     </tr>
                 `).join('');
@@ -191,7 +191,6 @@
             }
         }
 
-      
         document.getElementById('pImage').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -245,7 +244,6 @@
             }
         }
 
-      
         async function fetchOrders() {
             try {
                 const res = await fetch(`${API_URL}/orders`, {
@@ -256,12 +254,12 @@
                 const tbody = document.getElementById('ordersTableBody');
                 tbody.innerHTML = orders.map(o => `
                     <tr>
-                        <td><strong>${o._id.substring(o._id.length - 6).toUpperCase()}</strong><br><small>${new Date(o.createdAt).toLocaleDateString()}</small></td>
+                        <td><strong>ORDER-#${o.id}</strong><br><small>${new Date(o.createdAt).toLocaleDateString()}</small></td>
                         <td>${o.fullname}<br><small>${o.email}</small></td>
                         <td>Rp ${o.totalSummary.toLocaleString('id-ID')}</td>
                         <td><span class="badge ${o.paymentStatus === 'Paid' ? 'paid' : 'pending'}">${o.paymentStatus}</span></td>
                         <td>
-                            <select onchange="updateShipping('${o._id}', this.value)" style="padding:5px; border-radius:4px;">
+                            <select onchange="updateShipping('${o.id}', this.value)" style="padding:5px; border-radius:4px;">
                                 <option value="Pending" ${o.shippingStatus === 'Pending' ? 'selected' : ''}>Pending</option>
                                 <option value="Processing" ${o.shippingStatus === 'Processing' ? 'selected' : ''}>Processing</option>
                                 <option value="Shipped" ${o.shippingStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
@@ -289,7 +287,6 @@
             }
         }
 
-       
         async function fetchUsers() {
             try {
                 const res = await fetch(`${API_URL}/users`, {
@@ -311,7 +308,6 @@
             }
         }
 
-       
         function openProductModal() {
             document.getElementById('productForm').reset();
             document.getElementById('imagePreview').style.display = 'none';

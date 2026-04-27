@@ -1,39 +1,30 @@
-KAINÈA | The Heritage of East Nusa Tenggara 🧵
-KAINÈA adalah platform e-commerce boutique yang didedikasikan untuk melestarikan dan memasarkan keindahan Tenun Ikat Nusa Tenggara Timur (NTT). Proyek ini menggabungkan warisan budaya tradisional dengan sistem manajemen inventori dan transaksi modern berbasis full-stack JavaScript.
----------------------------------------------------------------------------------------------------------------------------------------
+KAINÈA: Full-Stack Regional Textile E-Commerce Platform
+Deskripsi Proyek
+Aplikasi web e-commerce full-stack yang dirancang untuk digitalisasi dan transaksi produk tekstil daerah. Sistem ini dibangun dengan arsitektur client-server yang secara tegas memisahkan antarmuka pengguna (frontend) dari logika pemrosesan data (backend).
 
-📂 Inti Proyek & Nilai Bisnis
-Tenun NTT bukan sekadar kain, melainkan karya seni yang memiliki nilai ekonomi tinggi. KAINÈA hadir untuk:
+Tech Stack & Infrastruktur
 
-Digitalisasi Budaya: Membawa produk kerajinan tangan NTT ke pasar global.
+Frontend: HTML5, CSS3, Vanilla JavaScript (DOM Manipulation, Fetch API).
 
-Seamless Logistics: Menyediakan alur pengiriman yang fleksibel (Delivery & Pickup) untuk mengakomodasi kebutuhan kolektor kain tenun.
+Backend: Node.js, Express.js.
 
-Verified Transactions: Menjamin keamanan pembayaran melalui verifikasi harga di sisi server (back-end validation).
----------------------------------------------------------------------------------------------------------------------------------------
+Database: MySQL.
 
-Fitur Teknis Unggulan
-1. Professional Logistics Engine
-Sistem ini dirancang untuk menangani detail pengiriman produk bernilai tinggi secara presisi:
+Infrastruktur & Deployment: cPanel, LiteSpeed Web Server, Passenger (Node.js App Manager), SSL/HTTPS Enforcement.
 
-Multi-Courier Support: Integrasi pilihan kurir JNE, SiCepat, dan GoSend dengan kalkulasi ongkos kirim real-time.
+Fitur Fungsional
 
-In-Store Pickup Option: Pelanggan dapat memilih untuk mengambil produk langsung di butik KAINÈA HQ guna memastikan kualitas fisik kain.
+Secure Authentication: Sistem registrasi dan login terintegrasi dengan validasi kredensial di basis data MySQL.
 
-2. Security & Data Integrity (JWT)
-Secure Auth: Menggunakan JSON Web Token untuk melindungi data pribadi dan riwayat pesanan pelanggan.
+Role-Based Access Control (RBAC): Pemisahan hak akses dan rute antara Administrator dan Pengguna.
 
-Tamper-Proof Checkout: Total harga dihitung ulang oleh server sebelum masuk ke database MongoDB untuk mencegah manipulasi harga dari sisi browser.
+State Management: Pengelolaan keranjang belanja (cart) secara dinamis menggunakan local storage dan sinkronisasi data sisi klien.
 
-3. Smart User Experience
-Role-Based Redirection: Sistem mengenali secara otomatis apakah yang masuk adalah Admin (untuk kelola stok kain) atau Customer (untuk belanja).
+Resolusi Kendala Teknis (Technical Problem-Solving)
+Bagian ini menunjukkan kemampuan adaptasi pada production environment.
 
-Order History: Pelacakan pesanan yang transparan dengan status pembayaran dan pengiriman yang diperbarui secara otomatis.
----------------------------------------------------------------------------------------------------------------------------------------
+Cross-Origin Resource Sharing (CORS) Configuration: Mengamankan pertukaran data pada protokol HTTPS dengan mengonfigurasi header CORS spesifik di Express.js, mencegah pemblokiran Mixed Content oleh peramban modern.
 
-🛠️ Tech Stack
-Backend: Node.js & Express.js (High-performance API).
+Server Routing & Passenger Integration: Meresolusi isu routing 404 dan 503 HTTP dengan melakukan pemetaan ulang aplikasi Node.js pada Passenger cPanel, serta mengimplementasikan instruksi mod_rewrite via .htaccess untuk mengelola jalur /api.
 
-Database: MongoDB (NoSQL untuk skalabilitas data produk tenun).
-
-Frontend: Vanilla JavaScript (ES6+), HTML5, & Modular CSS3.
+Environment Variable Management: Mengisolasi dan mengamankan kredensial basis data menggunakan konfigurasi .env, mencegah paparan data sensitif dan menangani parsing karakter khusus pada kata sandi MySQL di tingkat server.

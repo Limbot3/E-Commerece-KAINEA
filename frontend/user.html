@@ -66,6 +66,10 @@
 
     <script src="js/main.js"></script>
     <script>
+        // SMART API URL DETECTOR
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_URL = isLocalhost ? 'http://localhost:8080/api' : 'http://kainea.marianuswilliam.web.id/api';
+
         document.addEventListener('DOMContentLoaded', () => {
            
             const token = localStorage.getItem('token');
@@ -74,7 +78,6 @@
                 window.location.href = 'index.html';
                 return;
             }
-
             
             document.getElementById('displayUserName').textContent = localStorage.getItem('userName') || 'N/A';
             document.getElementById('displayUserEmail').textContent = localStorage.getItem('userEmail') || 'N/A';
@@ -82,10 +85,8 @@
 
             fetchMyOrders();
         });
-
         
         function switchUserPanel(panelId) {
-            
             document.querySelectorAll('.user-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.user-menu li').forEach(li => li.classList.remove('active'));
             
@@ -99,12 +100,11 @@
                 window.location.href = 'index.html';
             }
         }
-
         
         async function fetchMyOrders() {
             try {
-              
-                const response = await fetch('http://localhost:8080/api/orders/my-orders', {
+                // Menggunakan API_URL dinamis
+                const response = await fetch(`${API_URL}/orders/my-orders`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 
@@ -115,7 +115,7 @@
                     if (orders.length > 0) {
                         tbody.innerHTML = orders.map(o => `
                             <tr>
-                                <td><strong>${o._id.substring(o._id.length - 6).toUpperCase()}</strong></td>
+                                <td><strong>ORDER-#${o.id}</strong></td>
                                 <td>${new Date(o.createdAt).toLocaleDateString()}</td>
                                 <td>Rp ${o.totalSummary.toLocaleString('id-ID')}</td>
                                 <td><span class="badge ${o.paymentStatus === 'Paid' ? 'paid' : (o.paymentStatus === 'Failed' ? 'failed' : 'pending')}">${o.paymentStatus}</span></td>
